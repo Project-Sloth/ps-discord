@@ -1,6 +1,8 @@
 local DiscordAPI = require 'api/main'
 local Roles = require 'queue/roles'
 
+local maxPlayersConvar = GetConvarInt('sv_maxclients', 48)
+
 local Queue = {}
 local inQueue = {}
 local shouldQueueRun = false
@@ -50,14 +52,17 @@ local function startQueue()
         while shouldQueueRun do
             Citizen.Wait(1000)
 
-            if #inQueue > 0 then
+            local playersInServer = #GetPlayers()
+
+
+            if #inQueue > 0 and playersInServer < maxPlayersConvar then
                 local data = table.remove(inQueue, 1)
 
                 data.deferrals.done()
                 print(string.format('[PS] %s has connected', data.identifier))
-            end
 
-            updateQueueNumbers()
+                updateQueueNumbers()
+            end
 
             if #inQueue == 0 then
                 shouldQueueRun = false
