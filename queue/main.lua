@@ -54,9 +54,9 @@ local function startQueue()
 
             local playersInServer = #GetPlayers()
 
-            for _, data in ipairs(inQueue) do
+            for i, data in ipairs(inQueue) do
                 if not GetPlayerName(data.source) then
-                    table.remove(inQueue, _)
+                    table.remove(inQueue, i)
                     updateQueueNumbers()
                 end
             end
