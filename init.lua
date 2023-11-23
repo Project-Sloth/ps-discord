@@ -28,6 +28,7 @@ end
 local Queue = require 'queue/main'
 
 AddEventHandler('playerConnecting', function(name, _, deferrals)
+    local tempId = source
     print(string.format('[PS] %s is connecting', name))
     local identifier = GetPlayerIdentifierByType(source, 'discord')
     identifier = identifier and identifier:gsub('discord:', '')
@@ -37,7 +38,7 @@ AddEventHandler('playerConnecting', function(name, _, deferrals)
         return
     end
 
-    Queue:AddToQueue(identifier, deferrals)
+    Queue:AddToQueue(tempId, identifier, deferrals)
 end)
 
 AddEventHandler('playerDropped', function(reason)

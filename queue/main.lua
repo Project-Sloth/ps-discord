@@ -54,6 +54,12 @@ local function startQueue()
 
             local playersInServer = #GetPlayers()
 
+            for _, data in ipairs(inQueue) do
+                if not GetPlayerName(data.source) then
+                    table.remove(inQueue, _)
+                    updateQueueNumbers()
+                end
+            end
 
             if #inQueue > 0 and playersInServer < maxPlayersConvar then
                 local data = table.remove(inQueue, 1)
@@ -72,7 +78,7 @@ local function startQueue()
     end)
 end
 
-function Queue:AddToQueue(identifier, deferrals)
+function Queue:AddToQueue(source, identifier, deferrals)
     deferrals.defer()
     deferrals.update(Lang.connecting)
 
@@ -115,6 +121,7 @@ function Queue:AddToQueue(identifier, deferrals)
         end
 
         table.insert(inQueue, {
+            source = source,
             identifier = identifier,
             priority = priority,
             deferrals = deferrals,
