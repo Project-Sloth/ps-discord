@@ -130,4 +130,14 @@ function Queue:AddToQueue(identifier, deferrals)
     end)
 end
 
+function Queue:PlayerLeft(identifier)
+    for i, data in ipairs(inQueue) do
+        if data.identifier == identifier then
+            table.remove(inQueue, i)
+            updateQueueNumbers()
+            break
+        end
+    end
+end
+
 return Queue

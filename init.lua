@@ -39,3 +39,13 @@ AddEventHandler('playerConnecting', function(name, _, deferrals)
 
     Queue:AddToQueue(identifier, deferrals)
 end)
+
+AddEventHandler('playerDropped', function(reason)
+    local identifier = GetPlayerIdentifierByType(source, 'discord')
+    identifier = identifier and identifier:gsub('discord:', '')
+    if not identifier then
+        return
+    end
+
+    Queue:PlayerLeft(identifier)
+end)
