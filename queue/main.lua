@@ -40,8 +40,8 @@ local function sortQueue()
 end
 
 local function updateQueueNumbers()
-    for _, data in ipairs(inQueue) do
-        data.deferrals.update(string.format(Lang.inQueue, #inQueue))
+    for i, data in ipairs(inQueue) do
+        data.deferrals.update(string.format(Lang.inQueue, i))
     end
 end
 
