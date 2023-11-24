@@ -66,7 +66,7 @@ local function startQueue()
                 local data = table.remove(inQueue, 1)
 
                 data.deferrals.done()
-                Debug(string.format('[ps-discord] %s has connected', data.identifier))
+                Debug(string.format('[ps-discord] %s has connected successfully', GetPlayerName(data.source)))
 
                 updateQueueNumbers()
             end
