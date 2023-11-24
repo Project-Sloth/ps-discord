@@ -58,6 +58,6 @@ AddEventHandler('onResourceStart', function(resourceName)
     StopResource(resourceName)
 end)
 
-if GetResourceState('hardcap') == 'running' then
+if GetResourceState('hardcap') == 'started' then
     StopResource('hardcap')
 end
