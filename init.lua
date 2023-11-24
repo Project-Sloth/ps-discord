@@ -51,3 +51,13 @@ AddEventHandler('playerDropped', function(reason)
 
     Queue:PlayerLeft(identifier)
 end)
+
+AddEventHandler('onResourceStart', function(resourceName)
+    if resourceName ~= "hardcap" then return end
+
+    StopResource(resourceName)
+end)
+
+if GetResourceState('hardcap') == 'running' then
+    StopResource('hardcap')
+end
