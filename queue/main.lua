@@ -151,6 +151,7 @@ local function startQueue()
             end
 
             if #inQueue == 0 then
+                SetConvar('sv_hostname', hostname)
                 shouldQueueRun = false
                 break
             end
