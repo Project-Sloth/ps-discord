@@ -49,7 +49,7 @@ AddEventHandler('playerDropped', function(reason)
         return
     end
 
-    Queue:PlayerLeft(identifier)
+    Queue:AddToGrace(identifier)
 end)
 
 AddEventHandler('onResourceStart', function(resourceName)

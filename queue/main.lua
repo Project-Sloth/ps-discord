@@ -1,12 +1,22 @@
 local DiscordAPI = require 'api/main'
 local Roles = require 'queue/roles'
 local Debug = require 'queue/debug'
+local Card = require 'queue/card'
+local Webhook = require 'queue/webhook'
 
 local maxPlayersConvar = GetConvarInt('sv_maxclients', 48)
+local displayQueueInHostname = GetConvarInt('ps:displayQueueInHostname', 1) == 1
+local gracePeriod = GetConvarInt('ps:gracePeriod', 0)
+local ghostCheckInterval = GetConvarInt('ps:ghostCheckInterval', 30)
+local hostname = GetConvar('sv_hostname', 'Project Sloth')
+local webhookStatusMessage = GetConvar('ps:webhookStatusMessage', '')
+local webhookStatusUpdateInterval = GetConvarInt('ps:webhookStatusUpdateInterval', 30)
 
 local Queue = {}
 local inQueue = {}
+local recentlyLeft = {}
 local shouldQueueRun = false
+local webhookStatusMessageId = nil
 
 local function sortQueue()
     local usersWithPriority = {}
@@ -40,9 +50,84 @@ local function sortQueue()
     inQueue = finalyQueueList
 end
 
+local function setAdaptiveCard(deferrals, queueNumber, totalInQueue)
+    local card = Card:Build(queueNumber, totalInQueue)
+    deferrals.presentCard(card)
+end
+
 local function updateQueueNumbers()
     for i, data in ipairs(inQueue) do
-        data.deferrals.update(string.format(Lang.inQueue, i))
+        setAdaptiveCard(data.deferrals, i, #inQueue)
+    end
+
+    if displayQueueInHostname and #inQueue > 0 then
+        local withQueue = string.format('[%s] %s', #inQueue, hostname)
+        SetConvar('sv_hostname', withQueue)
+    end
+end
+
+local lastGhostCheck = nil
+local function checkForGhostPlayers()
+    if lastGhostCheck and lastGhostCheck + ghostCheckInterval > os.time() then
+        return
+    end
+
+    for i, data in ipairs(inQueue) do
+        if not GetPlayerName(data.source) then
+            table.remove(inQueue, i)
+        end
+    end
+    updateQueueNumbers()
+
+    lastGhostCheck = os.time()
+end
+
+local function generateStatusMessage()
+    return {
+        username = 'Project Sloth',
+        avatar_url = 'https://avatars.githubusercontent.com/u/99291234?s=200&v=4',
+        embeds = {
+            {
+                title = hostname,
+                description = 'Here\'s the latest data straight from our server!',
+                color = 0x3d20d2,
+                fields = {
+                    {
+                        name = 'Players',
+                        value = string.format('`%s`', #GetPlayers()),
+                        inline = true
+                    },
+                    {
+                        name = 'In Queue',
+                        value = string.format('`%s`', #inQueue),
+                        inline = true
+                    }
+                }
+            }
+        }
+    }
+end
+
+local isCreating = false
+local function checkForEmbedPost()
+    if isCreating or webhookStatusMessage == '' then return end
+
+    if not webhookStatusMessageId then
+        isCreating = true
+        local message = generateStatusMessage()
+
+        Webhook:Send(webhookStatusMessage, message, function(statusCode, response, headers, error)
+            print(statusCode, response, headers, error)
+            local data = json.decode(response)
+
+            if data then
+                webhookStatusMessageId = data.id
+            end
+
+            isCreating = false
+        end)
+    else
+        Webhook:EditMessage(webhookStatusMessage, webhookStatusMessageId, generateStatusMessage())
     end
 end
 
@@ -53,15 +138,9 @@ local function startQueue()
         while shouldQueueRun do
             Citizen.Wait(1000)
 
+            checkForGhostPlayers()
+
             local playersInServer = #GetPlayers()
-
-            for i, data in ipairs(inQueue) do
-                if not GetPlayerName(data.source) then
-                    table.remove(inQueue, i)
-                    updateQueueNumbers()
-                end
-            end
-
             if #inQueue > 0 and playersInServer < maxPlayersConvar then
                 local data = table.remove(inQueue, 1)
 
@@ -98,7 +177,7 @@ function Queue:AddToQueue(source, identifier, deferrals)
             hasRole = true
         end
 
-        local priority = 0
+        local priority = 1000
         for _, role in ipairs(roles) do
             if not hasRole then
                 for _, allowedRole in ipairs(Roles.allowlistedRoles) do
@@ -112,6 +191,14 @@ function Queue:AddToQueue(source, identifier, deferrals)
             for prio, priorityRole in ipairs(Roles.priorityRoles) do
                 if role == priorityRole then
                     priority = prio
+                end
+            end
+        end
+
+        if gracePeriod > 0 then
+            for _, data in ipairs(recentlyLeft) do
+                if data.time + gracePeriod > os.time() and data.identifier == identifier then
+                    priority = #Roles.priorityRoles + 1
                 end
             end
         end
@@ -146,6 +233,15 @@ function Queue:PlayerLeft(identifier)
             break
         end
     end
+end
+
+if webhookStatusMessage ~= '' then
+    CreateThread(function()
+        while true do
+            checkForEmbedPost()
+            Citizen.Wait(webhookStatusUpdateInterval * 1000)
+        end
+    end)
 end
 
 return Queue
