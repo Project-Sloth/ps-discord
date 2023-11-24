@@ -1,7 +1,3 @@
---[[
-    I just wanted to require modules for cleaner code, but I didn't want to use oxlib
-    since more dependencies would be annoying. So here's a quick little implementation for this resource.
-]]
 local loaded = {}
 require = function(moduleName)
     if loaded[moduleName] then
