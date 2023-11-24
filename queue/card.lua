@@ -59,7 +59,7 @@ function Card:Build(queueNumber, totalInQueue)
     if queueNumber then
         table.insert(body, {
             ["type"] = "TextBlock",
-            ["text"] = string.format("You're current position is: %s / %s", queueNumber, totalInQueue),
+            ["text"] = string.format("Your current position is: %s / %s", queueNumber, totalInQueue),
             ["wrap"] = true,
             ["size"] = "Large",
             ["horizontalAlignment"] = "Center"
