@@ -5,9 +5,13 @@ ps-discord is an efficient standalone queue system for FiveM that has discord in
 ### Installation
 1. Grab the latest release from the releases tab.
 2. Extract the files to your server resources folder.
-3. Remove any other queue resources & hardcap.
-4. Set up `queue/roles.lua` and `queue/card.lua` to your liking. See [Configuration](#configuration) for more information.
-4. Set up the resource to your needs with the convars stated below.
+3. Remove any other queue resources.
+4. Go to the Discord Developer Portal, and create an app if you haven't already. Find it [here](https://discord.com/developers/applications/)
+5. Copy your bot token and put it in the server cfg, as this: `set ps:discordBotToken "TOKENHERE"`.
+6. Copy your servers ID and put it in the server cfg as this: `set ps:discordGuildId "IDHERE"` (This can be found by enabling the Developer mode on Discord, and right clicking on your server)
+7. Set up `queue/roles.lua` and `queue/card.lua` to your liking. See [Configuration](#configuration) for more information.
+8. Check the list of covars below, to see if there's anything else you might want to change.
+9. Done! You've successfully installed ps-discord!
 
 ### Configuration
 You primarily configure the resource with the convars stated below. There however is two files you should edit to your liking.
