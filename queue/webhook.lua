@@ -89,4 +89,29 @@ function Webhook:EditMessage(webhook, messageId, data, callback)
     end
 end
 
+function Webhook:DeleteMessage(webhook, messageId, callback)
+    if not requestsMade[webhook] then
+        requestsMade[webhook] = {}
+    end
+
+    if not callback then
+        callback = function() end
+    end
+
+    if #requestsMade[webhook] < requestsPerMinute then
+        PerformHttpRequest(webhook .. '/messages/' .. messageId, callback, 'DELETE', json.encode({}),
+            { ['Content-Type'] = 'application/json' })
+
+        table.insert(requestsMade[webhook], os.time())
+    else
+        table.insert(queue,
+            { orgWebook = webhook, webhook = webhook .. '/messages/' .. messageId, data = {}, callback = callback })
+
+        if not shouldRunQueueChecks then
+            shouldRunQueueChecks = true
+            startQueueThread()
+        end
+    end
+end
+
 return Webhook

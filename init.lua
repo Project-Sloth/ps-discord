@@ -67,6 +67,10 @@ exports("WebhookEdit", function(webhook, messageId, data, callback)
     Webhook:EditMessage(webhook, messageId, data, callback)
 end)
 
+exports("WebhookDelete", function(webhook, messageId, callback)
+    Webhook:DeleteMessage(webhook, messageId, callback)
+end)
+
 local presetColors = {
     default = 0,
     teal = 0x1abc9c,
