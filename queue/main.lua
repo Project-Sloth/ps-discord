@@ -16,7 +16,7 @@ local Queue = {}
 local inQueue = {}
 local recentlyLeft = {}
 local shouldQueueRun = false
-local webhookStatusMessageId = GetResourceKvpString('psdiscord:webhookStatusMessageId')
+local webhookStatusMessageId = GetResourceKvpString('psdiscord:webhookStatusMessageId') or ''
 
 local function sortQueue()
     local usersWithPriority = {}
@@ -112,7 +112,7 @@ local isCreating = false
 local function checkForEmbedPost()
     if isCreating or webhookStatusMessage == '' then return end
 
-    if not webhookStatusMessageId then
+    if not webhookStatusMessageId or webhookStatusMessageId == '' then
         isCreating = true
         local message = generateStatusMessage()
 
@@ -244,5 +244,10 @@ if webhookStatusMessage ~= '' then
         end
     end)
 end
+
+RegisterCommand("clearWebhookStatus", function(source)
+    webhookStatusMessageId = ''
+    SetResourceKvp('psdiscord:webhookStatusMessageId', '')
+end, true)
 
 return Queue
