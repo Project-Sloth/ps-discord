@@ -37,6 +37,96 @@ You only have to configure the convars that has `none` as default value. The res
 | `set ps:webhookStatusMessage` | STRING | none | The webhook to send the status message to (leave blank to disable) |
 | `set ps:webhookStatusUpdateInterval` | INT | 30 | The amount of time to send the status message to the webhook (in seconds) (Defualt is 30) |
 
+### Exports
+#### `exports["ps-discord"]:GetQueueStatus(identifier)`
+Gets the queue status of a player.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `identifier` | STRING | The identifier of the player to get the queue status of. |
+
+| Return | Type | Description |
+| --- | --- | --- |
+| queueNumber | INT | The queue number of the player. |
+| queuePriority | INT | The queue priority of the player. |
+
+#### `exports["ps-discord"]:UpdateQueuePriority(identifier, priority)`
+Updates the queue priority of a player for this load only.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `identifier` | STRING | The identifier of the player to update the queue priority of. |
+| `priority` | INT | The new queue priority of the player. |
+
+| Return | Type | Description |
+| --- | --- | --- |
+| success | BOOL | Whether or not the queue priority was updated. |
+
+#### `exports["ps-discord"]:ForceRefreshQueue()`
+Forces the queue to refresh everyones queue number and priority.
+
+#### `exports["ps-discord"]:OnQueueAdded(callback)`
+Adds a callback to be called when a player is added to the queue.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `callback` | FUNCTION | The callback function to call when a player is added to the queue. |
+
+**Example:**
+```lua
+exports["ps-discord"]:OnQueueAdded(function(identifier, priority)
+    print("Player " .. identifier .. " was added to the queue with priority " .. priority)
+end)
+```
+
+#### `exports["ps-discord"]:WebhookSend(webhook, data, callback, wait)`
+Sends a message to a webhook.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `webhook` | STRING | The webhook to send the message to. |
+| `data` | TABLE | The data to send to the webhook. |
+| `callback` | FUNCTION | The callback function to call when the request is done. |
+| `wait` | BOOL | Set this to true if you wish to edit the message later, this will return the message in the reponse parameter of the callback |
+
+#### `exports["ps-discord"]:WebhookEdit(webhook, message, data, callback)`
+Edits a message sent by a webhook.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `webhook` | STRING | The webhook to edit the message from. |
+| `messageId` | STRING | The message id to edit. |
+| `data` | TABLE | The data to send to the webhook. |
+| `callback` | FUNCTION | The callback function to call when the request is done. |
+
+#### `exports["ps-discord"]:WebhookSendMessage(webhook, name, title, color, message, tagEveryone, callback, wait)`
+Sends a message to a webhook with a premade embed.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `webhook` | STRING | The webhook to send the message to. |
+| `name` | STRING | The name of the embed account sending the messaged |
+| `title` | STRING | The title of the embed. |
+| `color` | INT or STRING | The color of the embed. |
+| `message` | STRING | The message of the embed. |
+| `tagEveryone` | BOOL | Whether or not to tag everyone in the message. |
+| `callback` | FUNCTION | The callback function to call when the request is done. |
+| `wait` | BOOL | Set this to true if you wish to edit the message later, this will return the message in the reponse parameter of the callback |
+
+#### `exports["ps-discord"]:WebhookEditMessage(webhook, messageId, name, title, color, message, tagEveryone, callback)`
+Edits a message sent by a webhook with a premade embed.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `webhook` | STRING | The webhook to edit the message from. |
+| `messageId` | STRING | The message id to edit. |
+| `name` | STRING | The name of the embed account sending the messaged |
+| `title` | STRING | The title of the embed. |
+| `color` | INT or STRING | The color of the embed. |
+| `message` | STRING | The message of the embed. |
+| `tagEveryone` | BOOL | Whether or not to tag everyone in the message. |
+| `callback` | FUNCTION | The callback function to call when the request is done. |
+
 ## Preview
 ![image](https://github.com/Project-Sloth/ps-discord/assets/82112471/83b680c9-db2a-40aa-a958-ff68c58a81bb)
 ![image](https://github.com/Project-Sloth/ps-discord/assets/82112471/2bc02073-0779-44b0-ac78-e681e23d1e94)
