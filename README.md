@@ -14,13 +14,16 @@ You primarily configure the resource with the convars stated below. There howeve
 That is `queue/roles.lua` and `queue/card.lua`, the first one determines which roles have access and their priority and the second one is the card that is displayed in the queue.
 
 ### Convars
-- `set ps:discordDebug "true" or "false"` | STRING | If you want debug prints in server console.
-- `set ps:discordAPIVersion 10` | INT | The Discord API Version you want to use (Recommended Version 10.)
-- `set ps:discordGuildId "Your Discord Guild Id"` | STRING | This is for your Discord Guild ID (Right-click Server Name in Dev Mode and Copy Server ID.)
-- `set ps:discordBotToken "Your Discord Guild Id"` | STRING | This is for your Discord Bot Token (Bot Token in Discord Developer Portal.)
-- `set ps:discordRequestsPerMinute 30` | INT | The Max Amount of Requests to the Discord API per minute (Recommended Amount is 30)
-- `set ps:displayQueueInHostname` | INT | If you want to display the queue in the hostname (1 = true, 0 = false)
-- `set ps:gracePeriod` | INT | The amount of time a player can be disconnected and join back to get upped queue priority (in seconds) (0 = disabled)
-- `set ps:ghostCheckInterval` | INT | The amount of time to check for ghost players (in seconds)
-- `set ps:webhookStatusMessage` | STRING | The webhook to send the status message to (leave blank to disable)
-- `ps:webhookStatusUpdateInterval` | INT | The amount of time to send the status message to the webhook (in seconds) (Defualt is 30)
+You only have to configure the convars that has `none` as default value. The rest is optional. These should be placed in the `server.cfg` file or a file loaded by it.
+| Convar | Type | Default | Description |
+| --- | --- | --- | --- |
+| `set ps:discordDebug` | STRING | "false" | If you want debug prints in server console. |
+| `set ps:discordAPIVersion` | INT | 10 | The Discord API Version you want to use (Recommended Version 10.) |
+| `set ps:discordGuildId` | STRING | none | This is for your Discord Guild ID (Right-click Server Name in Dev Mode and Copy Server ID.) |
+| `set ps:discordBotToken` | STRING | none | This is for your Discord Bot Token (Bot Token in Discord Developer Portal.) |
+| `set ps:discordRequestsPerMinute` | INT | 30 | The Max Amount of Requests to the Discord API per minute (Recommended Amount is 30) |
+| `set ps:displayQueueInHostname` | INT | 1 | If you want to display the queue in the hostname (1 = true, 0 = false) |
+| `set ps:gracePeriod` | INT | 0 | The amount of time a player can be disconnected and join back to get upped queue priority (in seconds) (0 = disabled) |
+| `set ps:ghostCheckInterval` | INT | 60 | The amount of time to check for ghost players (in seconds) |
+| `set ps:webhookStatusMessage` | STRING | none | The webhook to send the status message to (leave blank to disable) |
+| `ps:webhookStatusUpdateInterval` | INT | 30 | The amount of time to send the status message to the webhook (in seconds) (Defualt is 30) |
