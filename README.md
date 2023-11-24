@@ -34,8 +34,8 @@ You only have to configure the convars that has `none` as default value. The res
 | `set ps:webhookStatusUpdateInterval` | INT | 30 | The amount of time to send the status message to the webhook (in seconds) (Defualt is 30) |
 
 ## Preview
-![image](https://github.com/Project-Sloth/ps-discord/assets/82112471/f9834ee0-faba-44ab-b7b0-d7f6797210c2)
-![image](https://github.com/Project-Sloth/ps-discord/assets/82112471/be8e8dfa-fcb3-490d-a57d-6e1113b2bc35)
+![image](https://github.com/Project-Sloth/ps-discord/assets/82112471/83b680c9-db2a-40aa-a958-ff68c58a81bb)
+![image](https://github.com/Project-Sloth/ps-discord/assets/82112471/2bc02073-0779-44b0-ac78-e681e23d1e94)
 
 ## Credits
 [Walter](https://github.com/Walter-00)
