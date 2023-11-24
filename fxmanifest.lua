@@ -8,7 +8,7 @@ description 'ps-discord'
 
 author 'Walter and Project Sloth Team'
 
-version '1.0.0'
+version '1.0.1'
 
 server_scripts {
     'lang.lua',
