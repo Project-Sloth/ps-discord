@@ -236,6 +236,12 @@ function Queue:PlayerLeft(identifier)
     end
 end
 
+function Queue:AddToGrace(identifier)
+    if gracePeriod > 0 then
+        table.insert(recentlyLeft, { identifier = identifier, time = os.time() })
+    end
+end
+
 if webhookStatusMessage ~= '' then
     CreateThread(function()
         while true do
