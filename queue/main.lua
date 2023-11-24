@@ -16,7 +16,7 @@ local Queue = {}
 local inQueue = {}
 local recentlyLeft = {}
 local shouldQueueRun = false
-local webhookStatusMessageId = nil
+local webhookStatusMessageId = GetResourceKvpString('psdiscord:webhookStatusMessageId')
 
 local function sortQueue()
     local usersWithPriority = {}
@@ -120,6 +120,7 @@ local function checkForEmbedPost()
             local data = json.decode(response)
 
             if data then
+                SetResourceKvp('psdiscord:webhookStatusMessageId', data.id)
                 webhookStatusMessageId = data.id
             end
 
