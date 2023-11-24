@@ -31,7 +31,7 @@ You only have to configure the convars that has `none` as default value. The res
 | `set ps:gracePeriod` | INT | 0 | The amount of time a player can be disconnected and join back to get upped queue priority (in seconds) (0 = disabled) |
 | `set ps:ghostCheckInterval` | INT | 60 | The amount of time to check for ghost players (in seconds) |
 | `set ps:webhookStatusMessage` | STRING | none | The webhook to send the status message to (leave blank to disable) |
-| `ps:webhookStatusUpdateInterval` | INT | 30 | The amount of time to send the status message to the webhook (in seconds) (Defualt is 30) |
+| `set ps:webhookStatusUpdateInterval` | INT | 30 | The amount of time to send the status message to the webhook (in seconds) (Defualt is 30) |
 
 ## Preview
 ![image](https://github.com/Project-Sloth/ps-discord/assets/82112471/f9834ee0-faba-44ab-b7b0-d7f6797210c2)
