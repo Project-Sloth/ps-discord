@@ -1,5 +1,5 @@
 # ps-discord
-ps-discord is an efficient standalone queue system for FiveM that has discord integration with a priority system. 
+ps-discord is an efficient standalone queue system for FiveM that has discord integration with a priority system. This script was inspired in response to numerous inefficient scripts that cause server-side lag, particularly when the Discord API is rate-limited. Our testing has shown that this script remains highly stable, with server-side performance between 0.00 and 0.03 ms. Additionally, the included anti rate-limiter for Discord effectively limits the number of requests to 30 per minute, ensuring smooth operation.
 
 ## Usage
 ### Installation
