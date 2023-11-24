@@ -20,7 +20,7 @@ local function sortQueue()
         if a.priority == b.priority then
             return a.index < b.index
         else
-            return a.priority > b.priority
+            return a.priority < b.priority
         end
     end)
 
