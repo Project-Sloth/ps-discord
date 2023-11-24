@@ -41,17 +41,22 @@ local function startQueueThread()
     end)
 end
 
-function Webhook:Send(webhook, data, callback)
+function Webhook:Send(webhook, data, callback, wait)
     if not requestsMade[webhook] then
         requestsMade[webhook] = {}
     end
 
+    if not callback then
+        callback = function() end
+    end
+
     if #requestsMade[webhook] < requestsPerMinute then
-        PerformHttpRequest(webhook .. "?wait=true", callback, 'POST', json.encode(data),
+        PerformHttpRequest(webhook .. (wait and "?wait=true" or ""), callback, 'POST', json.encode(data),
             { ['Content-Type'] = 'application/json' })
         table.insert(requestsMade[webhook], os.time())
     else
-        table.insert(queue, { orgWebook = webhook, webhook = webhook .. "?wait=true", data = data, callback = callback })
+        table.insert(queue,
+            { orgWebook = webhook, webhook = webhook .. (wait and "?wait=true" or ""), data = data, callback = callback })
         if not shouldRunQueueChecks then
             shouldRunQueueChecks = true
             startQueueThread()
@@ -64,6 +69,10 @@ function Webhook:EditMessage(webhook, messageId, data, callback)
         requestsMade[webhook] = {}
     end
 
+    if not callback then
+        callback = function() end
+    end
+
     if #requestsMade[webhook] < requestsPerMinute then
         PerformHttpRequest(webhook .. '/messages/' .. messageId, callback, 'PATCH', json.encode(data),
             { ['Content-Type'] = 'application/json' })
@@ -72,6 +81,31 @@ function Webhook:EditMessage(webhook, messageId, data, callback)
     else
         table.insert(queue,
             { orgWebook = webhook, webhook = webhook .. '/messages/' .. messageId, data = data, callback = callback })
+
+        if not shouldRunQueueChecks then
+            shouldRunQueueChecks = true
+            startQueueThread()
+        end
+    end
+end
+
+function Webhook:DeleteMessage(webhook, messageId, callback)
+    if not requestsMade[webhook] then
+        requestsMade[webhook] = {}
+    end
+
+    if not callback then
+        callback = function() end
+    end
+
+    if #requestsMade[webhook] < requestsPerMinute then
+        PerformHttpRequest(webhook .. '/messages/' .. messageId, callback, 'DELETE', json.encode({}),
+            { ['Content-Type'] = 'application/json' })
+
+        table.insert(requestsMade[webhook], os.time())
+    else
+        table.insert(queue,
+            { orgWebook = webhook, webhook = webhook .. '/messages/' .. messageId, data = {}, callback = callback })
 
         if not shouldRunQueueChecks then
             shouldRunQueueChecks = true

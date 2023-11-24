@@ -125,7 +125,7 @@ local function checkForEmbedPost()
             end
 
             isCreating = false
-        end)
+        end, true)
     else
         Webhook:EditMessage(webhookStatusMessage, webhookStatusMessageId, generateStatusMessage())
     end
@@ -159,6 +159,7 @@ local function startQueue()
     end)
 end
 
+local onQueueAddCallbacks = {}
 function Queue:AddToQueue(source, identifier, deferrals)
     deferrals.defer()
     deferrals.update(Lang.connecting)
@@ -220,6 +221,12 @@ function Queue:AddToQueue(source, identifier, deferrals)
         deferrals.update(string.format(Lang.inQueue, #inQueue))
         updateQueueNumbers()
 
+        CreateThread(function()
+            for _, callback in ipairs(onQueueAddCallbacks) do
+                callback(identifier, priority)
+            end
+        end)
+
         if not shouldQueueRun then
             startQueue()
         end
@@ -241,6 +248,49 @@ function Queue:AddToGrace(identifier)
         table.insert(recentlyLeft, { identifier = identifier, time = os.time() })
     end
 end
+
+local function getQueueStatus(identifier)
+    local queueNumber = 0
+    for _, data in ipairs(inQueue) do
+        if data.identifier == identifier then
+            queueNumber = data.index
+            break
+        end
+    end
+
+    return queueNumber, #inQueue
+end
+
+exports('GetQueueStatus', getQueueStatus)
+
+local function updatePriority(identifier, priority)
+    for _, data in ipairs(inQueue) do
+        if data.identifier == identifier then
+            data.priority = priority
+            sortQueue()
+            updateQueueNumbers()
+            print(string.format('[ps-discord] %s updated their priority via export to %s', identifier, priority))
+            return true
+        end
+    end
+
+    return false
+end
+
+exports('UpdateQueuePriority', updatePriority)
+
+local function forceRefresh()
+    updateQueueNumbers()
+    print('[ps-discord] Force refreshed queue numbers via export')
+end
+
+exports('ForceRefreshQueue', forceRefresh)
+
+local function onQueueAdded(callback)
+    table.insert(onQueueAddCallbacks, callback)
+end
+
+exports('OnQueueAdded', onQueueAdded)
 
 if webhookStatusMessage ~= '' then
     CreateThread(function()
