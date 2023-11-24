@@ -15,11 +15,11 @@ local function processQueue()
     end
 
     for i = #queue, 1, -1 do
-        local webhook = queue[i].webhook
-        if requestsMade[webhook] < requestsPerMinute then
-            table.insert(requestsMade[webhook], os.time())
+        local orgWebhook = queue[i].orgWebook
+        if #requestsMade[orgWebhook] < requestsPerMinute then
+            table.insert(requestsMade[orgWebhook], os.time())
 
-            PerformHttpRequest(webhook, queue[i].callback, 'POST', json.encode(queue[i].data),
+            PerformHttpRequest(queue[i].webhook, queue[i].callback, 'POST', json.encode(queue[i].data),
                 { ['Content-Type'] = 'application/json' })
 
             table.remove(queue, i)
@@ -51,7 +51,7 @@ function Webhook:Send(webhook, data, callback)
             { ['Content-Type'] = 'application/json' })
         table.insert(requestsMade[webhook], os.time())
     else
-        table.insert(queue, { webhook = webhook, data = data, callback = callback })
+        table.insert(queue, { orgWebook = webhook, webhook = webhook .. "?wait=true", data = data, callback = callback })
         if not shouldRunQueueChecks then
             shouldRunQueueChecks = true
             startQueueThread()
@@ -70,7 +70,8 @@ function Webhook:EditMessage(webhook, messageId, data, callback)
 
         table.insert(requestsMade[webhook], os.time())
     else
-        table.insert(queue, { webhook = webhook .. '/messages/' .. messageId, data = data, callback = callback })
+        table.insert(queue,
+            { orgWebook = webhook, webhook = webhook .. '/messages/' .. messageId, data = data, callback = callback })
 
         if not shouldRunQueueChecks then
             shouldRunQueueChecks = true
