@@ -117,7 +117,6 @@ local function checkForEmbedPost()
         local message = generateStatusMessage()
 
         Webhook:Send(webhookStatusMessage, message, function(statusCode, response, headers, error)
-            print(statusCode, response, headers, error)
             local data = json.decode(response)
 
             if data then
