@@ -1,4 +1,5 @@
 local QueueSystem = require 'api/queue'
+local Debug = require 'queue/debug'
 
 local API = {}
 
@@ -9,8 +10,8 @@ local discordBotToken = GetConvar('ps:discordBotToken', '')
 function API:FetchMemberInfo(discordId, callback)
     local function responseCallback(respCode, resultData, result, error)
         if respCode ~= 200 then
-            print(error)
-            print(string.format('[PS] Failed to fetch member info for %s: %s', discordId, resultData))
+            Debug(error)
+            Debug(string.format('[ps-discord] Failed to fetch member info for %s: %s', discordId, resultData))
             callback(false)
             return
         end
@@ -18,7 +19,7 @@ function API:FetchMemberInfo(discordId, callback)
         local data = json.decode(resultData)
 
         if not data then
-            print(string.format('[PS] Failed to decode member info for %s: %s', discordId, resultData))
+            Debug(string.format('[ps-discord] Failed to decode member info for %s: %s', discordId, resultData))
             callback(false)
             return
         end

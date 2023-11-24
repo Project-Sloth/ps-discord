@@ -26,15 +26,16 @@ require = function(moduleName)
 end
 
 local Queue = require 'queue/main'
+local Debug = require 'queue/debug'
 
 AddEventHandler('playerConnecting', function(name, _, deferrals)
     local tempId = source
-    print(string.format('[PS] %s is connecting', name))
+    Debug(string.format('[ps-discord] %s is connecting', name))
     local identifier = GetPlayerIdentifierByType(source, 'discord')
     identifier = identifier and identifier:gsub('discord:', '')
     if not identifier then
         deferrals.done(Lang.failedDiscordIdentifier)
-        print(string.format('[PS] %s failed to provide a Discord identifier', name))
+        Debug(string.format('[ps-discord] %s failed to provide a Discord identifier', name))
         return
     end
 

@@ -1,5 +1,6 @@
 local DiscordAPI = require 'api/main'
 local Roles = require 'queue/roles'
+local Debug = require 'queue/debug'
 
 local maxPlayersConvar = GetConvarInt('sv_maxclients', 48)
 
@@ -65,7 +66,7 @@ local function startQueue()
                 local data = table.remove(inQueue, 1)
 
                 data.deferrals.done()
-                print(string.format('[PS] %s has connected', data.identifier))
+                Debug(string.format('[ps-discord] %s has connected', data.identifier))
 
                 updateQueueNumbers()
             end
@@ -88,7 +89,7 @@ function Queue:AddToQueue(source, identifier, deferrals)
             return
         end
 
-        print(string.format('[PS] Found Discord user %s (%s)', user.user.username, user.user.id))
+        Debug(string.format('[ps-discord] Found Discord user %s (%s)', user.user.username, user.user.id))
 
         local roles = user.roles
         local hasRole = false
