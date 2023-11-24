@@ -1,5 +1,5 @@
 # ps-discord
-ps-discord is an efficient queue system for FiveM that has discord integration with a priority system.
+ps-discord is an efficient standalone queue system for FiveM that has discord integration with a priority system. 
 
 ## Usage
 ### Installation
