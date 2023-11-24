@@ -3,7 +3,7 @@ local allowlistedRoles = {
     "1165779386096693278"
 }
 
--- put in what priority they should have, the higher they are on the list the higher priority they have.
+-- Put in what priority their Discord role should have, the higher they are on the list the higher priority they have.
 local priorityRoles = {
     "1165779386096693278"
 }
