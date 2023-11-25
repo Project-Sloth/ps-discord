@@ -1,6 +1,5 @@
 local QueueSystem = {}
 local requestsPerMinuteConvar = GetConvarInt('ps:discordRequestsPerMinute', 30)
-local stallTimeOnRateLimit = GetConvarInt('ps:discordStallTimeOnRateLimit', 10)
 
 local queue = {}
 local recentRequests = {}
@@ -9,9 +8,14 @@ local shouldRunQueueChecks = false
 local function doRequest(request, callback)
     local function responseCallback(respCode, resultData, result, error)
         if respCode == 429 then
+            local retryAfter = error:match("\"retry_after\":(.-),")
+            if not retryAfter or tonumber(retryAfter) == nil then
+                retryAfter = 5
+            end
+
             Debug(string.format('[ps-discord] Hit Discord\'s rate limit. Stalling and trying again in %s seconds',
-                stallTimeOnRateLimit))
-            callback(false)
+                retryAfter))
+            callback(retryAfter)
             return
         end
 
@@ -34,16 +38,16 @@ local function startQueue()
                 end
             end
 
-            local shouldStallForRateLimit = false
+            local shouldStallForRateLimit = nil
             local p = promise.new()
             if #queue > 0 and #recentRequests < requestsPerMinuteConvar then
                 local request = table.remove(queue, 1)
                 doRequest(request, function(success)
-                    if success then
+                    if success == true then
                         table.insert(recentRequests, os.time())
                     else
                         table.insert(queue, request)
-                        shouldStallForRateLimit = true
+                        shouldStallForRateLimit = success
                     end
 
                     p:resolve()
@@ -58,7 +62,7 @@ local function startQueue()
             end
 
             if shouldStallForRateLimit then
-                Wait(stallTimeOnRateLimit * 1000)
+                Wait(shouldStallForRateLimit * 1000)
             else
                 Wait(500)
             end
@@ -67,22 +71,10 @@ local function startQueue()
 end
 
 function QueueSystem:ProcessRequest(request)
-    if #recentRequests < requestsPerMinuteConvar then
-        doRequest(request, function(success)
-            if not success then
-                table.insert(queue, request)
-                return
-            end
+    table.insert(queue, request)
 
-            table.insert(recentRequests, os.time())
-        end)
-        table.insert(recentRequests, os.time())
-    else
-        table.insert(queue, request)
-
-        if not shouldRunQueueChecks then
-            startQueue()
-        end
+    if not shouldRunQueueChecks then
+        startQueue()
     end
 end
 
