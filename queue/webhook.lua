@@ -98,19 +98,12 @@ function Webhook:DeleteMessage(webhook, messageId, callback)
         callback = function() end
     end
 
-    if #requestsMade[webhook] < requestsPerMinute then
-        PerformHttpRequest(webhook .. '/messages/' .. messageId, callback, 'DELETE', json.encode({}),
-            { ['Content-Type'] = 'application/json' })
+    table.insert(queue,
+        { orgWebook = webhook, webhook = webhook .. '/messages/' .. messageId, data = {}, callback = callback })
 
-        table.insert(requestsMade[webhook], os.time())
-    else
-        table.insert(queue,
-            { orgWebook = webhook, webhook = webhook .. '/messages/' .. messageId, data = {}, callback = callback })
-
-        if not shouldRunQueueChecks then
-            shouldRunQueueChecks = true
-            startQueueThread()
-        end
+    if not shouldRunQueueChecks then
+        shouldRunQueueChecks = true
+        startQueueThread()
     end
 end
 
