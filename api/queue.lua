@@ -68,7 +68,14 @@ end
 
 function QueueSystem:ProcessRequest(request)
     if #recentRequests < requestsPerMinuteConvar then
-        doRequest(request)
+        doRequest(request, function(success)
+            if not success then
+                table.insert(queue, request)
+                return
+            end
+
+            table.insert(recentRequests, os.time())
+        end)
         table.insert(recentRequests, os.time())
     else
         table.insert(queue, request)
