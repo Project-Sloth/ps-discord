@@ -1,12 +1,24 @@
 local QueueSystem = {}
 local requestsPerMinuteConvar = GetConvarInt('ps:discordRequestsPerMinute', 30)
+local stallTimeOnRateLimit = GetConvarInt('ps:discordStallTimeOnRateLimit', 10)
 
 local queue = {}
 local recentRequests = {}
 local shouldRunQueueChecks = false
 
-local function doRequest(request)
-    PerformHttpRequest(request.url, request.callback, request.method, request.data, request.headers)
+local function doRequest(request, callback)
+    local function responseCallback(respCode, resultData, result, error)
+        if respCode == 429 then
+            Debug(string.format('[ps-discord] Hit Discord\'s rate limit. Stalling and trying again in %s seconds',
+                stallTimeOnRateLimit))
+            callback(false)
+            return
+        end
+
+        callback(true)
+        request.callback(respCode, resultData, result, error)
+    end
+    PerformHttpRequest(request.url, responseCallback, request.method, request.data, request.headers)
 end
 
 local function startQueue()
@@ -22,17 +34,34 @@ local function startQueue()
                 end
             end
 
+            local shouldStallForRateLimit = false
+            local p = promise.new()
             if #queue > 0 and #recentRequests < requestsPerMinuteConvar then
-                doRequest(table.remove(queue, 1))
-                table.insert(recentRequests, os.time())
+                local request = table.remove(queue, 1)
+                doRequest(request, function(success)
+                    if success then
+                        table.insert(recentRequests, os.time())
+                    else
+                        table.insert(queue, request)
+                        shouldStallForRateLimit = true
+                    end
+
+                    p:resolve()
+                end)
             end
+
+            Citizen.Await(p)
 
             if #queue == 0 then
                 shouldRunQueueChecks = false
                 break
             end
 
-            Citizen.Wait(500)
+            if shouldStallForRateLimit then
+                Wait(stallTimeOnRateLimit * 1000)
+            else
+                Wait(500)
+            end
         end
     end)
 end
